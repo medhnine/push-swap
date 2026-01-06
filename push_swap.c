@@ -1,13 +1,13 @@
 #include "header.h"
 
-static void	print_linked(s_slot *began)
-{
-	while (began)
-	{
-		printf("%d\n", began->value);
-		began = began->next;
-	}
-}
+// static void	print_linked(s_slot *began)
+// {
+// 	while (began)
+// 	{
+// 		printf("%d\n", began->value);
+// 		began = began->next;
+// 	}
+// }
 
 static void	add_back(s_slot **target, s_slot *node)
 {
@@ -245,7 +245,6 @@ void	sort_three(s_slot **a_addr)
 	first = track->value;
 	second = track->next->value;
 	third = track->next->next->value;
-	printf("%d\n%d\n%d\n", first, second, third);
 	if (first < second && second > third && third < first)
 		move_to_exucte("rra", a_addr, NULL, 0);
 	else if (first < second && second > third && third > first)
@@ -283,17 +282,17 @@ int	find_current_max(s_slot *b_addr, int max)
 	}
 	return (0);
 }
-void	sort_stack_a(s_slot **a_addr, s_slot **b_addr, int max, int size)
+void	sort_stack_a(s_slot **a_addr, s_slot **b_addr, int max)
 {
-	int	pos,(cost);
+	int	pos,(cost),(size);
 	while ((*b_addr))
 	{
 		pos = find_current_max((*b_addr), max);
+		size = size_of_stack((*b_addr));
 		cost = size / 2; 
 		if ((*b_addr)->index == max)
 		{
 		 	move_to_exucte("pa", a_addr, b_addr, 0);
-			size = size_of_stack((*b_addr));
 			max--;
 		}
 		else if (pos <= cost)
@@ -320,6 +319,7 @@ void	sort_others(s_slot **a_addr, s_slot **b_addr, int chunk_size)
 			move_to_exucte("pb", a_addr, b_addr, 0);
 			if (min == temp)
 				min++;
+			// min++;
 			max++;
 			if (temp <= mid)
 				move_to_exucte("rb", a_addr, b_addr, 0);
@@ -333,7 +333,7 @@ void	sort_others(s_slot **a_addr, s_slot **b_addr, int chunk_size)
 int	main(int ac, char **av)
 {
 	s_slot *head, (*b_addr);
-	int chunk_size,(max);
+	int chunk_size,(max),(size);
 
 	chunk_size = 1;
 	head = NULL;
@@ -354,20 +354,138 @@ int	main(int ac, char **av)
 	}
 	if (is_sorted(head) == 0)
 		exit(1);
+	size = size_of_stack(head);
+	if (size == 3)
+	{
+		sort_three(&head);
+		clean_up_node(&head);
+		exit(1);
+	}
 	indexing_nodes(&head);
-	// print_linked(head);
-	head->largest = size_of_stack(head) - 1;
+	head->largest = size - 1;
 	max = head->largest;
-	if (size_of_stack(head) <= 100 && size_of_stack(head) > 5)
-		chunk_size = 15;
-	else if (size_of_stack(head) < 500 && size_of_stack(head) > 100)
-		chunk_size = 25;
-	// print_linked(head);
+	if (size <= 100 && size > 5)
+		chunk_size = 20;
+	else if (size <= 500 && size > 100)
+		chunk_size = 24;
 	sort_others(&head, &b_addr, chunk_size);
-	// print_linked(head);
-	sort_stack_a(&head, &b_addr, max, size_of_stack(head));
-	// sort_three(&head);
-	print_linked(head);
+	sort_stack_a(&head, &b_addr, max);
 	clean_up_node(&head);
 	return (0);
 }
+// 
+
+// #include "push_swap.h"
+
+// int get_chunk_size(int size)
+// {
+//     if (size >= 500)
+//         return 30;
+//     return 15;
+// }
+
+// void set_position(t_stack *stack)
+// {
+//     int i;
+
+//     i = 0;
+//     while (stack)
+//     {
+//         stack->pos = i;
+//         stack = stack->next;
+//         i++;
+//     }
+// }
+
+// int find_pos_in_range(t_stack *a, int start, int end)
+// {
+//     int pos;
+
+//     pos = 0;
+//     while (a)
+//     {
+//         if (a->index >= start && a->index < end)
+//             return pos;
+//         a = a->next;
+//         pos++;
+//     }
+//     return -1;
+// }
+
+// // Push From A → B by Chunks
+// void push_chunks(t_stack **a, t_stack **b, int size)
+// {
+//     int chunk;
+//     int i;
+
+//     chunk = get_chunk_size(size);
+//     i = 0;
+
+//     while (*a)
+//     {
+//         if ((*a)->index <= i)
+//         {
+//             ft_pb(a, b);
+//             ft_rb(b);
+//             i++;
+//         }
+//         else if ((*a)->index <= i + chunk)
+//         {
+//             ft_pb(a, b);
+//             i++;
+//         }
+//         else
+//             ft_ra(a);
+//     }
+// }
+
+
+// // Push Back B → A (Sort Phase)
+// t_stack *find_max(t_stack *b)
+// {
+//     t_stack *max;
+
+//     max = b;
+//     while (b)
+//     {
+//         if (b->index > max->index)
+//             max = b;
+//         b = b->next;
+//     }
+//     return (max);
+// }
+
+// void push_back(t_stack **a, t_stack **b)
+// {
+//     t_stack *max;
+//     int size;
+
+//     while (*b)
+//     {
+//         size = ft_lstsize(*b);
+//         set_position(*b);
+//         max = find_max(*b);
+
+//         if (max->pos <= size / 2)
+//         {
+//             while ((*b)->index != max->index)
+//                 ft_rb(b);
+//         }
+//         else
+//         {
+//             while ((*b)->index != max->index)
+//                 ft_rrb(b);
+//         }
+//         ft_pa(a, b);
+//     }
+// }
+
+// void ft_chunk_algo(t_stack **a, t_stack **b)
+// {
+//     int size;
+//     size = ft_lstsize(*a);
+//     ft_chunk_index(a);
+    
+//     push_chunks(a,b,size);
+//     push_back(a,b);
+// }
