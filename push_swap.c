@@ -120,7 +120,6 @@ static void	clean_up_node(s_slot **node)
 		temp = NULL;
 	}
 	*node = NULL;
-	free(*node);
 }
 
 static void	clean_up_array(char **ptr)
@@ -219,74 +218,90 @@ void	indexing_nodes(s_slot **head)
 {
 	s_slot	*track;
 	s_slot	*check;
-	int		index,max;
+	int		index;
 
 	track = *head;
-	while (track->next)
+	while (track)
 	{
 		check = *head;
 		index = 0;
-		while (check->next)
+		while (check)
 		{
 			if (track->value > check->value)
 				index++;
 			check = check->next;
 		}
-		if (track->value > check->value)
-			index++;
 		track->index = index;
 		track = track->next;
 	}
-	check = *head;
-	printf("max : %d\n", index);
-	index = 0;
-	while (check->next)
-	{
-		if (track->value > check->value)
-			index++;
-		check = check->next;
-	}
-	track->index = index;
-	printf("max : %d\n", index);
 }
 
 void	sort_three(s_slot **a_addr)
 {
 	s_slot	*track;
+	int	first,(second),(third);
 
 	track = (*a_addr);
-	if (track->index < track->next->index
-		&& track->next->index > track->next->next->index)
+	first = track->value;
+	second = track->next->value;
+	third = track->next->next->value;
+	printf("%d\n%d\n%d\n", first, second, third);
+	if (first < second && second > third && third < first)
+		move_to_exucte("rra", a_addr, NULL, 0);
+	else if (first < second && second > third && third > first)
 	{
-		printf("if %d < %d, and %d > %d\n", track->index, track->next->index,
-			track->next->index, track->next->next->index);
+		
 		move_to_exucte("rra", a_addr, NULL, 0);
 		move_to_exucte("sa", a_addr, NULL, 0);
 	}
-	else if (track->index > track->next->index
-		&& track->next->index < track->next->next->index)
+	else if (first > second && second < third && third > first)
+		move_to_exucte("sa", a_addr, NULL, 0);
+	else if (first > second && second > third)
 	{
-		move_to_exucte("ra", a_addr, NULL, 0);
+		move_to_exucte("sa", a_addr, NULL, 0);
+		move_to_exucte("rra", a_addr, NULL, 0);
 	}
-	else if (track->index > track->next->index
-		&& track->next->index > track->next->next->index)
+	else if (first > second && second < third)
 	{
 		move_to_exucte("rra", a_addr, NULL, 0);
-		move_to_exucte("sa", a_addr, NULL, 0);
+		move_to_exucte("rra", a_addr, NULL, 0);
 	}
 }
-
-void	sort_stack_a(s_slot **a_addr, s_slot **b_addr, int max)
+int	find_current_max(s_slot *b_addr, int max)
 {
+	int	pos;
+
+	pos = 0;
+	while (b_addr)
+	{
+		if (b_addr->index == max)
+		{
+			return (pos);
+		}
+		pos++;
+		b_addr= b_addr->next;
+	}
+	return (0);
+}
+void	sort_stack_a(s_slot **a_addr, s_slot **b_addr, int max, int size)
+{
+	int	pos,(cost);
 	while ((*b_addr))
 	{
+		pos = find_current_max((*b_addr), max);
+		cost = size / 2; 
 		if ((*b_addr)->index == max)
 		{
 		 	move_to_exucte("pa", a_addr, b_addr, 0);
+			size = size_of_stack((*b_addr));
 			max--;
 		}
-		else
+		else if (pos <= cost)
+		{
 			move_to_exucte("rb", a_addr, b_addr, 0);
+		}
+		else
+			move_to_exucte("rrb", a_addr, b_addr, 0);
 	}
 }
 
@@ -315,7 +330,7 @@ void	sort_others(s_slot **a_addr, s_slot **b_addr, int chunk_size)
 	}
 }
 
-void	push_swap(int ac, char **av)
+int	main(int ac, char **av)
 {
 	s_slot *head, (*b_addr);
 	int chunk_size,(max);
@@ -340,15 +355,19 @@ void	push_swap(int ac, char **av)
 	if (is_sorted(head) == 0)
 		exit(1);
 	indexing_nodes(&head);
+	// print_linked(head);
 	head->largest = size_of_stack(head) - 1;
 	max = head->largest;
-	printf("largset %d\n", head->largest);
 	if (size_of_stack(head) <= 100 && size_of_stack(head) > 5)
 		chunk_size = 15;
 	else if (size_of_stack(head) < 500 && size_of_stack(head) > 100)
 		chunk_size = 25;
+	// print_linked(head);
 	sort_others(&head, &b_addr, chunk_size);
+	// print_linked(head);
+	sort_stack_a(&head, &b_addr, max, size_of_stack(head));
+	// sort_three(&head);
 	print_linked(head);
-	sort_stack_a(&head, &b_addr, max);
 	clean_up_node(&head);
+	return (0);
 }

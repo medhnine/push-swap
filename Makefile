@@ -1,18 +1,16 @@
 CC = cc
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -Werror
 
 SRCS = count_words.c ft_is_separator.c ft_split.c push_swap.c moves.c
 
 OBJS = $(SRCS:.c=.o)
 
-NAME = push.a
+NAME = push_swap
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	ar rcs $(NAME) $(OBJS)
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 
 clean:
 	rm -f $(OBJS)

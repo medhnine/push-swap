@@ -21,7 +21,7 @@ typedef struct la_balena
 	s_slot  *top;
 }       s_container;
 
-void    push_swap(int ac, char **av);
+// void    push_swap(int ac, char **av);
 void    make_structure(s_slot **head, char **av);
 int     count_words(char *str);
 char    **ft_split(char *str);
