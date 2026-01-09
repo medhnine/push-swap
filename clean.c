@@ -1,20 +1,47 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_is_separator.c                                  :+:      :+:    :+:   */
+/*   clean.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohhnine <mohhnine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/07 23:20:37 by mohhnine          #+#    #+#             */
-/*   Updated: 2026/01/09 00:50:25 by mohhnine         ###   ########.fr       */
+/*   Created: 2026/01/07 23:20:28 by mohhnine          #+#    #+#             */
+/*   Updated: 2026/01/09 02:43:34 by mohhnine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "header.h"
 
-int	is_separtor(char c)
+void	clean_up_array(char **ptr)
 {
-	if ((c >= 8 && c <= 13) || c == 32)
-		return (1);
-	return (0);
+	int	move;
+
+	if (ptr == NULL)
+		return ;
+	move = 0;
+	while (ptr[move])
+	{
+		free(ptr[move]);
+		ptr[move] = NULL;
+		move++;
+	}
+	free(ptr);
+}
+
+void	clean_up_node(s_slot **node)
+{
+	s_slot	*tarck;
+	s_slot	*temp;
+
+	if (node == NULL)
+		return ;
+	tarck = *node;
+	while (tarck)
+	{
+		temp = tarck;
+		tarck = tarck->next;
+		free(temp);
+		temp = NULL;
+	}
+	*node = NULL;
 }

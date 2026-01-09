@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_split.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mohhnine <mohhnine@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/07 23:20:40 by mohhnine          #+#    #+#             */
+/*   Updated: 2026/01/08 00:58:53 by mohhnine         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "header.h"
 
 static void	clean_up(char **target, int n_elemets)
@@ -35,7 +47,6 @@ static void	fill_in(char *str, char **target)
 		else
 			index++;
 	}
-	return ;
 }
 
 static int	allocate_n_bytes(char *str, char **target, int n_elemets)
@@ -66,11 +77,16 @@ static int	allocate_n_bytes(char *str, char **target, int n_elemets)
 
 char	**ft_split(char *str)
 {
-	char **hold;
-	int n_word;
+	char	**hold;
+	int		n_word;
+
 	if (!str)
 		return (NULL);
+	if (str[0] == '\0')
+		return (NULL);
 	n_word = count_words(str);
+	if (n_word == 0)
+		write(2, "Error\n", 6);
 	hold = malloc(sizeof(char *) * (n_word + 1));
 	if (!hold)
 		return (NULL);
